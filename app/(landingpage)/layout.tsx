@@ -1,5 +1,6 @@
 import React from 'react'
 import Navbar from './_components/navbar'
+import Footer from './_components/footer'
 
 const LadingPageLayout = ({ children } : { children: React.ReactNode }) => {
   return (
@@ -8,7 +9,7 @@ const LadingPageLayout = ({ children } : { children: React.ReactNode }) => {
         <main className='h-full'>
             {children}
         </main>
-        footer
+        <Footer />
     </div>
   )
 }
