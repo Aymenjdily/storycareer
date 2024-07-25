@@ -3,9 +3,9 @@ import Navbar from './_components/navbar'
 
 const LadingPageLayout = ({ children } : { children: React.ReactNode }) => {
   return (
-    <div>
+    <div className='h-full'>
         <Navbar />
-        <main>
+        <main className='h-full'>
             {children}
         </main>
         footer
