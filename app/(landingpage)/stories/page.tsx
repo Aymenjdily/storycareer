@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SaveForm from './_components/saveForm'
 
 import Image from "next/image";
 import { ArrowRight, ImageIcon } from "lucide-react";
@@ -21,6 +22,8 @@ const StoriesPage = async () => {
       createdAt: "desc",
     },
   });
+
+  const saves = await prisma.save.findMany()
 
   return (
     <div className="py-32 h-full">
@@ -67,7 +70,7 @@ const StoriesPage = async () => {
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                 </ReadStory>
-                saveForm
+                <SaveForm saves={saves} story={story} />
             </CardFooter>
           </Card>
         ))}
