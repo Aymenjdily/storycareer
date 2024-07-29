@@ -16,7 +16,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const SidebarLinks = [
+export const SidebarLinks = [
   { label: "My stories", href: "/story", icon: Book },
   { label: "My saves", href: "/saves", icon: Heart },
 ];
