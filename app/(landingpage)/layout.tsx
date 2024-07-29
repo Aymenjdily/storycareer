@@ -6,7 +6,7 @@ const LadingPageLayout = ({ children } : { children: React.ReactNode }) => {
   return (
     <div className='h-full'>
         <Navbar />
-        <main className='h-full'>
+        <main className='h-full max-w-7xl mx-auto px-5 relative'>
             {children}
         </main>
         <Footer />
