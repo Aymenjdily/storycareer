@@ -1,14 +1,15 @@
 "use client";
 
+import { Story } from "@prisma/client";
 import React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
-import axios from 'axios'
-import { toast } from 'sonner'
+import { Loader, Pencil } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+interface Props {
+  initialData: Story;
+}
+
 const formSchema = z.object({
   title: z
     .string()
@@ -31,54 +36,63 @@ const formSchema = z.object({
     .max(5000),
 });
 
-const NewStoryPage = () => {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const { userId } = useAuth();
+const TitleForm = ({ initialData }: Props) => {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  const toggleEdit = () => setIsEditing((current) => !current);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
+      title: initialData.title || "",
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-        setIsSubmitting(true)
-        toast("Story is creating...")
+      setIsSubmitting(true);
+      toast("Story is updating...");
 
-        const res = await axios.post("/api/story", {
-            ...values,
-            userId
-        })
+      const res = await axios.patch(`/api/story/${initialData.id}`, {
+        ...values,
+      });
 
-        if(res.status === 201) {
-            toast("Story is Created", {
-                className: "bg-emerald-500 text-white"
-            })
-            router.push(`/story/${res.data.id}`)
-            router.refresh()
-        }
+      if (res.status === 201) {
+        toast("Story is Updated", {
+          className: "bg-emerald-500 text-white",
+        });
+        toggleEdit();
+        router.refresh();
+      }
     } catch (error) {
-        toast("Something went wrong", {
-            className: "bg-rose-500 text-white"
-        })
+      toast("Something went wrong", {
+        className: "bg-rose-500 text-white",
+      });
     } finally {
-        setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="flex justify-center items-center h-full w-full">
-      <div className="flex flex-col space-y-10">
-        <div>
-          <h1 className="text-2xl font-semibold">Give your story a title</h1>
-          <p className="text-sm text-muted-foreground">
-            Name your story, don&apos;t worry you can change it later.
-          </p>
-        </div>
+    <div className="border border-secondary rounded-md p-4 bg-secondary w-80">
+      <div className="flex items-center justify-between font-medium text-primary">
+        Title
+        <Button variant={"ghost"} type="button" onClick={toggleEdit}>
+          {isEditing ? (
+            <>Cancel</>
+          ) : (
+            <>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit title
+            </>
+          )}
+        </Button>
+      </div>
+      {!isEditing ? (
+        <p className="text-sm mt-2 text-primary">{initialData.title}</p>
+      ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
@@ -98,13 +112,13 @@ const NewStoryPage = () => {
             />
             <Button disabled={isSubmitting} type="submit">
               {isSubmitting && <Loader className="mr-2 w-5 h-5 animate-spin" />}
-              Create
+              Update
             </Button>
           </form>
         </Form>
-      </div>
+      )}
     </div>
   );
 };
 
-export default NewStoryPage;
+export default TitleForm;
